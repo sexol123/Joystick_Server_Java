@@ -1,9 +1,20 @@
 package handywheel.client;
 
+import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class Client {
+
+    final String host = "192.168.137.1";
+    final String localhost = "localhost";
+
+    final Scanner scanner = new Scanner(System.in);
+
+    JFrame jFrame = new JFrame();
 
     public static void clientRun() {
         Client client = new Client();
@@ -18,11 +29,21 @@ public class Client {
     private PrintWriter printWriter;
 
     void setup() throws IOException {
-        socket = new Socket("localhost", 4999);
+        socket = new Socket(localhost, 4999);
         printWriter = new PrintWriter(socket.getOutputStream(), true);
 
         sendMessage("Hello from client!!!");
-        listening();
+
+        jFrame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                sendMessage(Character.toString(e.getKeyCode()));
+            }
+        });
+        jFrame.setVisible(true);
+
+        //listening();
     }
 
     void setup(String address, int port) throws IOException {
@@ -40,21 +61,32 @@ public class Client {
         printWriter.println(msg);
     }
 
+    void sendMessage(byte msg) {
+        printWriter.println(msg);
+    }
+
+    void sendMessage(int msg) {
+        printWriter.println(msg);
+    }
+
     void listening() {
+
+
+
         String consoleInput;
         System.out.println("Listening... Press ENTER to EXIT");
 
         do {
-            consoleInput = System.console().readLine();
+            consoleInput = scanner.next();
             sendMessage(consoleInput);
-        } while (!consoleInput.equals(""));
+        } while (true);
 
-        terminate();
+       // terminate();
     }
 
     void terminate() {
         if (printWriter != null) {
-            //printWriter.flush();
+            printWriter.flush();
             printWriter = null;
         }
     }

@@ -2,8 +2,13 @@ package handywheel.server;
 
 import handywheel.Constant;
 
+import java.awt.*;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Server {
 
@@ -18,14 +23,28 @@ public class Server {
 
     private ServerSocket serverSocket;
     private Socket socket;
+    private Robot robot;
 
     void setup() throws IOException {
         serverSocket = new ServerSocket(4999);
+        System.out.println("Inet Address -> " + serverSocket.getInetAddress().toString());
+        System.out.println("LocalSocketAddress -> " + serverSocket.getLocalSocketAddress().toString());
+        System.out.println("LocalPort -> " + serverSocket.getLocalPort());
+
         socket = serverSocket.accept();
 
         System.out.println("Client connected");
 
+        setupRobot();
         setupReader();
+    }
+
+    private void setupRobot() {
+        try {
+            robot = new Robot();
+        } catch (AWTException exception) {
+            System.out.println(exception.getMessage());
+        }
     }
 
     void setup(int port) throws IOException {
@@ -42,9 +61,56 @@ public class Server {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
         String msg;
+        int character = 0;
+        int keyState = 0;
+
+        System.out.println();
         do {
-            msg = bufferedReader.readLine();
-            System.out.println("Client -> " + msg);
-        } while (!msg.equals(""));
+
+            try {
+                msg = bufferedReader.readLine();
+
+                if (msg == null) {
+                    System.out.println("Server ->  msg == null");
+                    return;
+                }
+
+                String[] tmp = msg.split("-");
+                character = Integer.parseInt(tmp[0]);
+                keyState = Integer.parseInt(tmp[1]);
+
+                doAction(character, keyState);
+
+                //System.out.println("Ch: "+character + " Key: " + keyState);
+                System.out.println("Client -> " + msg);
+                //key = socket.getInputStream().read();
+            } catch (Exception ex) {
+                System.out.println("Client -> " + ex.getMessage());
+            }
+        } while (true);
+    }
+
+    private final HashMap<Integer, Boolean> pressedButtons = new HashMap<>(5);
+
+    void doAction(int ch, int isPressed) {
+        if (isPressed == 0) {
+            robot.keyPress(ch);
+            pressedButtons.put(ch, true);
+            //System.out.println("Robot press -> " + ch);
+        } else if (isPressed == 1) {
+            pressedButtons.put(ch, false);
+            robot.keyRelease(ch);
+            //System.out.println("Robot Release -> " + ch);
+        } else if (isPressed == 2) {
+
+            boolean wasPressed = pressedButtons.get(ch);
+
+            if (wasPressed)
+                robot.keyRelease(ch);
+            else
+                robot.keyPress(ch);
+
+            pressedButtons.put(ch, !wasPressed);
+        }
     }
 }
