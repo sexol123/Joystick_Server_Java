@@ -12,6 +12,8 @@ import java.util.Scanner;
 
 public class Server {
 
+    public static int KEY_R = 82;
+
     public static void serverRun() {
         Server server = new Server();
         try {
@@ -60,19 +62,24 @@ public class Server {
         InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-        String msg;
+
         int character = 0;
         int keyState = 0;
 
-        System.out.println();
-        do {
+        System.out.println("Ready.");
 
+        String msg = bufferedReader.readLine();
+        System.out.println("Client -> " + msg);
+
+        do {
             try {
                 msg = bufferedReader.readLine();
 
-                if (msg == null) {
-                    System.out.println("Server ->  msg == null");
-                    return;
+                if (msg == null){
+                    Thread.sleep(1000);
+                    msg = bufferedReader.readLine();
+                    if (msg == null)
+                        restart();
                 }
 
                 String[] tmp = msg.split("-");
@@ -88,6 +95,16 @@ public class Server {
                 System.out.println("Client -> " + ex.getMessage());
             }
         } while (true);
+    }
+
+    private void restart(){
+        try {
+            socket.close();
+            serverSocket.close();
+            setup();
+        }catch (Exception ex){
+            System.out.println("Client -> " + ex.getMessage());
+        }
     }
 
     private final HashMap<Integer, Boolean> pressedButtons = new HashMap<>(5);

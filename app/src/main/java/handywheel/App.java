@@ -13,7 +13,7 @@ public class App {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ready...");
+        System.out.println("s - server, c - client");
         String consoleInput = scanner.nextLine();
 
         if (consoleInput.equals("s")) {
