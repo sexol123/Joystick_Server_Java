@@ -95,6 +95,9 @@ public class Server {
                 //System.out.println("Ch: "+character + " Key: " + keyState);
                 System.out.println("Client -> " + msg);
                 //key = socket.getInputStream().read();
+            }catch (IOException ex) {
+                System.out.println("Client -> " + ex.getMessage());
+                restart();
             } catch (Exception ex) {
                 System.out.println("Client -> " + ex.getMessage());
             }
@@ -102,6 +105,7 @@ public class Server {
     }
 
     private void restart(){
+        System.out.println("Restarting...");
         try {
             socket.close();
             serverSocket.close();

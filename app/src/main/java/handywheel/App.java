@@ -14,7 +14,7 @@ public class App {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("s - server, c - client");
-        String consoleInput = scanner.nextLine();
+        String consoleInput = "s";//scanner.nextLine();
 
         if (consoleInput.equals("s")) {
             System.out.println("Server mode...");
