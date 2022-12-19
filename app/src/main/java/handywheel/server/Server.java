@@ -3,6 +3,7 @@ package handywheel.server;
 import handywheel.Constant;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -11,8 +12,7 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Server {
-
-    public static int KEY_R = 82;
+    public static int KEY_ENTER = 13;
 
     public static void serverRun() {
         Server server = new Server();
@@ -84,6 +84,10 @@ public class Server {
 
                 String[] tmp = msg.split("-");
                 character = Integer.parseInt(tmp[0]);
+                if (character == KEY_ENTER){
+                    character = KeyEvent.VK_ENTER; //for Robot
+                }
+
                 keyState = Integer.parseInt(tmp[1]);
 
                 doAction(character, keyState);
