@@ -1,15 +1,12 @@
 package handywheel.server;
 
-import handywheel.Constant;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
+
+import static handywheel.Util.printlnWithTimestamp;
 
 public class Server {
     public static int KEY_ENTER = 13;
@@ -29,13 +26,14 @@ public class Server {
 
     void setup() throws IOException {
         serverSocket = new ServerSocket(4999);
-        System.out.println("Inet Address -> " + serverSocket.getInetAddress().toString());
-        System.out.println("LocalSocketAddress -> " + serverSocket.getLocalSocketAddress().toString());
-        System.out.println("LocalPort -> " + serverSocket.getLocalPort());
+
+        printlnWithTimestamp("LocalHost -> " + InetAddress.getLocalHost().toString());
+        printlnWithTimestamp("LocalPort -> " + serverSocket.getLocalPort());
+        printlnWithTimestamp("Waiting client...");
 
         socket = serverSocket.accept();
 
-        System.out.println("Client connected");
+        printlnWithTimestamp("Client connected");
 
         setupRobot();
         setupReader();
@@ -45,7 +43,7 @@ public class Server {
         try {
             robot = new Robot();
         } catch (AWTException exception) {
-            System.out.println(exception.getMessage());
+            printlnWithTimestamp(exception.getMessage());
         }
     }
 
@@ -53,7 +51,7 @@ public class Server {
         serverSocket = new ServerSocket(port);
         socket = serverSocket.accept();
 
-        System.out.println("Client connected");
+        printlnWithTimestamp("Client connected");
 
         setupReader();
     }
@@ -66,10 +64,10 @@ public class Server {
         int character = 0;
         int keyState = 0;
 
-        System.out.println("Ready.");
+        printlnWithTimestamp( "Ready.");
 
         String msg = bufferedReader.readLine();
-        System.out.println("Client -> " + msg);
+        printlnWithTimestamp("Client -> " + msg);
 
         do {
             try {
@@ -93,25 +91,25 @@ public class Server {
                 doAction(character, keyState);
 
                 //System.out.println("Ch: "+character + " Key: " + keyState);
-                System.out.println("Client -> " + msg);
+                printlnWithTimestamp("Client -> " + msg);
                 //key = socket.getInputStream().read();
             }catch (IOException ex) {
-                System.out.println("Client -> " + ex.getMessage());
+                printlnWithTimestamp("Client -> " + ex.getMessage());
                 restart();
             } catch (Exception ex) {
-                System.out.println("Client -> " + ex.getMessage());
+                printlnWithTimestamp("Client -> " + ex.getMessage());
             }
         } while (true);
     }
 
     private void restart(){
-        System.out.println("Restarting...");
+        printlnWithTimestamp("Restarting...");
         try {
             socket.close();
             serverSocket.close();
             setup();
         }catch (Exception ex){
-            System.out.println("Client -> " + ex.getMessage());
+            printlnWithTimestamp("Client -> " + ex.getMessage());
         }
     }
 
